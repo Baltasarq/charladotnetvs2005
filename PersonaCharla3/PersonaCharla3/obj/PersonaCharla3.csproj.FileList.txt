@@ -1,9 +1,0 @@
-bin\Debug\PersonaCharla3.exe
-bin\Debug\PersonaCharla3.pdb
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\PersonaCharla3.Form1.resources
-obj\Debug\PersonaCharla3.Properties.Resources.resources
-obj\Debug\PersonaCharla3.csproj.GenerateResource.Cache
-obj\Debug\PersonaCharla3.exe
-obj\Debug\PersonaCharla3.pdb
-obj\Debug\PersonaCharla3.Form2.resources
