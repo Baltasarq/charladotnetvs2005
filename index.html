@@ -32,7 +32,829 @@
 
         <section id="main_content">
           <h1>
-<a name="charla-sobre-desarrollo-net" class="anchor" href="#charla-sobre-desarrollo-net"><span class="octicon octicon-link"></span></a>Charla sobre desarrollo .NET</h1>
+<h1 style="text-decoration: underline;">Charla sobre Visual Studio 2005</h1>
+
+<p>
+Esta charla fue organizada por el Club .NET de la Escuela Superior de
+Ingenier&iacute;a Inform&aacute;tica de Orense.
+</p>
+
+<h2>Contenido</h2>
+
+<p>En la charla hice un repaso por varias
+caracter&iacute;sticas
+interesantes de <span style="font-weight: bold;">Visual
+Studio .NET 2005</span>, como la generaci&oacute;n
+autom&aacute;tica de diagramas de clase, el <span style="font-style: italic;">Object Test Bench</span>,
+el asistente Intellisense, <span style="font-style: italic;">Windows
+Forms</span>, y otras. Para hacer la demostraci&oacute;n de
+estas herramientas, utilic&eacute; como ejemplo una
+peque&ntilde;a aplicaci&oacute;n de agenda de personas e
+e.mails.
+</p>
+
+<h2>C&oacute;digo fuente</h2>
+
+<p>
+El c&oacute;digo fuente es accesible desde <a href="PersonaCharla3.zip">aqu&iacute;</a>. En
+principio, deber&iacute;a ser suficiente desempaquetarlo en un
+directorio (de mismo nombre que el Zip), y hacer que <span style="font-weight: bold;">Visual Studio</span> lo
+abriera.
+</p>
+
+<p>Aparecen a continuaci&oacute;n los fuentes de las tres
+clases principales de la aplicaci&oacute;n, sin contar la parte del
+dise&ntilde;ador de <span style="font-style: italic;">WinForms</span>
+de <span style="font-weight: bold;">Visual Studio</span>.</p>
+
+<p>N&oacute;tese que estas clases han sido creadas en la
+demostraci&oacute;n: particularmente, apenas comprueban condiciones
+de error, especialmente al cargar y salvar de/a XML.</p>
+
+<h3>El Form principal</h3>
+
+<table style="text-align: left; background-color: rgb(255, 255, 204); width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+
+    <tr>
+
+      <td>
+      <code><span style="color: rgb(0, 102, 0);">// El Form (ventana) principal de la
+aplicaci&oacute;n</span><br>
+
+      <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Collections.Generic; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.ComponentModel; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Data; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Drawing; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Text; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Windows.Forms; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Collections; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Xml; <br>
+
+&nbsp;<br>
+
+      <span style="color: rgb(153, 0, 0);">namespace</span> PersonaCharla3 { <br>
+
+&nbsp;&nbsp;&nbsp; <span style="color: rgb(153, 0, 0);">public</span> <span style="color: rgb(153, 0, 0);">partial</span> <span style="color: rgb(153, 0, 0);">class</span> Form1 : Form { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public const</span> string NomArchivoDatos = "personas.dat"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">&nbsp;
+public const</span> string EtqPersonas = "PERSONAS"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public const</span> string EtqPersona = "PERSONA"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public const</span> string EtqNombre = "NOMBRE"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public const</span> string EtqApellidos = "APELLIDOS"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">
+public const</span> string EtqEmail = "EMAIL"; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">private</span> ArrayList vPersonas; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public</span> Form1() <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+InitializeComponent(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Text = "Agenda de personas"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+MinimumSize = new Size( Size.Width, Size.Height ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+barraProgreso.Visible = false; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+vPersonas = new ArrayList(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponEstado( "Preparado..." ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cargar(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">private void</span> cargar() <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Cargar los datos de la
+persona de un archivo XML</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; //
+Inicio: cargar los nodos<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+XmlDocument docXml = new XmlDocument(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+docXml.Load( NomArchivoDatos ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponProgresoInic( "Cargando ...", 0,
+docXml.DocumentElement.ChildNodes.Count ); <br>
+
+&nbsp;<br>
+
+      </code><code>&nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; // Cargar cada persona en el archivo</code><br>
+
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">foreach</span> ( XmlNode nodo in docXml.DocumentElement.ChildNodes ) { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Persona p = new Persona( "", "", "" ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">foreach</span> ( XmlAttribute atr in nodo.Attributes ) { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">if</span> ( atr.Name.ToUpper() == EtqNombre ) { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+p.Nombre = atr.InnerText; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">else</span> <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">if</span> ( atr.Name.ToUpper() == EtqApellidos ) { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+p.Apellidos = atr.InnerText; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">else</span> <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">if</span> ( atr.Name.ToUpper() == EtqEmail ) { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+p.Email = atr.InnerText; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponProgresoInc(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+vPersonas.Add( p ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+listBox1.Items.Add( p.ToString() ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Ya
+est&aacute; hecho</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponProgresoFin(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">private void</span> ponEstado(string p) <br>
+
+      </code><code>&nbsp; &nbsp; &nbsp;
+&nbsp; <span style="color: rgb(0, 102, 0);">// Cambiar el mensaje de la barra de estado</span></code><br>
+
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+etqEstado.Text = p; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(102, 0, 0);">
+      <span style="color: rgb(153, 0, 0);">public void</span></span> ponProgresoInic(string msg, int inicio, int final) <br>
+
+      </code><code>&nbsp; &nbsp; &nbsp;
+&nbsp; <span style="color: rgb(0, 102, 0);">// Progreso de un proceso importante: inicio (dar los
+par&aacute;metros)</span></code><br>
+
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponEstado( msg ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+barraProgreso.Visible = true; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+barraProgreso.Minimum = inicio; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+barraProgreso.Maximum = final; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+this.Enabled = false; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public void </span>ponProgresoInc() <br>
+
+      </code><code>&nbsp; &nbsp; &nbsp;
+&nbsp;<span style="color: rgb(0, 102, 0);"> // Progreso de un proceso importante:
+continuaci&oacute;n, actualizar la barra de progreso</span></code><br>
+
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+barraProgreso.PerformStep(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public void </span>ponProgresoFin() <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Progreso de un proceso
+importante: fin (volver a poner la aplicaci&oacute;n accesible)</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+this.Enabled = true; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+barraProgreso.Visible = false; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponEstado( "Preparado..." ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">
+private void </span>button3_Click(object sender, EventArgs e) <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Bot&oacute;n 3:
+Cerrar la aplicaci&oacute;n</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp; &nbsp; &nbsp; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Close(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">
+private void</span> button1_Click(object sender, EventArgs e) <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp;<span style="color: rgb(0, 102, 0);"> // Bot&oacute;n 1:
+agregar personas ...</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Persona p = new Persona( "Palotes", "Perico", "perico@palotes.com" ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+listBox1.Items.Add( p.ToString() ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+vPersonas.Add( p ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">
+private void</span> button2_Click(object sender, EventArgs e) <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Bot&oacute;n 2:
+modificar persona ...</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+int pos = listBox1.SelectedIndex; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">if</span> ( pos &gt;= 0 ) { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Persona p = ( Persona ) vPersonas[ pos ]; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Form2 editar = new Form2( p ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+editar.ShowDialog( this ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+listBox1.Items[ pos ] = p.ToString(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <span style="color: rgb(153, 0, 0);">else </span>MessageBox.Show( "No hay personas o no se ha seleccionado
+ninguno." ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">
+private void</span> Form1_FormClosed(object sender, FormClosedEventArgs e) <br>
+
+      </code><code>&nbsp; &nbsp; &nbsp;
+&nbsp; <span style="color: rgb(0, 102, 0);">// Al cerrar la ventana ...</span></code><br>
+
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+save(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);">
+private void save() </span><br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Guardar los datos como
+un archivo XML</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+XmlNode nodo; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+XmlNode nodoPpal; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+XmlAttribute atr; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+// Inicio <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+XmlDocument docXml = new XmlDocument(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponProgresoInic( "Guardando ...", 0, vPersonas.Count ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodo = docXml.CreateNode( XmlNodeType.XmlDeclaration, "xml", "" ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( ( XmlDeclaration ) nodo ).Encoding = "iso-8859-1"; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+docXml.AppendChild( nodo ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodoPpal = docXml.CreateNode( XmlNodeType.Element, EtqPersonas, "" ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+docXml.AppendChild( nodoPpal ); <br>
+
+&nbsp;<br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; //
+Guardar cada persona<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">foreach</span> ( Persona p in vPersonas ) { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodo = docXml.CreateNode( XmlNodeType.Element, EtqPersona, "" ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atr = docXml.CreateAttribute( EtqNombre ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atr.InnerText = p.Nombre; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodo.Attributes.Append( atr ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atr = docXml.CreateAttribute( EtqApellidos ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atr.InnerText = p.Apellidos; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodo.Attributes.Append( atr ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atr = docXml.CreateAttribute( EtqEmail ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atr.InnerText = p.Email; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodo.Attributes.Append( atr ); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nodoPpal.AppendChild( nodo ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponProgresoInc(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(0, 102, 0);">// Final </span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+docXml.Save( NomArchivoDatos ); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ponProgresoFin(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;&nbsp;&nbsp; } <br>
+
+}
+      </code></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<h3>El Form de entrada de datos</h3>
+
+<table style="text-align: left; background-color: rgb(255, 255, 204); width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+
+    <tr>
+
+      <td style="background-color: rgb(255, 255, 204);">
+      <code><span style="color: rgb(0, 102, 0);">// El form (ventana de di&aacute;logo) para los
+datos de cada persona</span><br>
+
+      <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System; <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System.Collections.Generic; <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System.ComponentModel; <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System.Data; <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System.Drawing; <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System.Text; <br>
+
+      <span style="color: rgb(102, 0, 0);">using</span> System.Windows.Forms; <br>
+
+&nbsp;<br>
+
+      <span style="color: rgb(102, 0, 0);">namespace</span> PersonaCharla3 { <br>
+
+&nbsp;&nbsp;&nbsp; <span style="color: rgb(102, 0, 0);">public partial</span> <span style="color: rgb(102, 0, 0);">class</span> Form2 : Form { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Persona persona; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(102, 0, 0);">public</span> Form2(Persona p) <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+InitializeComponent(); <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+persona = p; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+edNombre.Text = p.Nombre; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+edApellidos.Text = p.Apellidos; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+edEmail.Text = p.Email; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(102, 0, 0);">private void</span> button1_Click(object sender, EventArgs e) <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Bot&oacute;n 1:
+Guardar los datos y salir</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+persona.Nombre = edNombre.Text; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+persona.Apellidos = edApellidos.Text; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+persona.Email = edEmail.Text; <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Close(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(102, 0, 0);">private void</span> button2_Click(object sender, EventArgs e) <br>
+
+&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: rgb(0, 102, 0);">// Bot&oacute;n 2:
+Salir sin guardar</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Close(); <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;&nbsp;&nbsp; } <br>
+
+}
+      </code></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+<h3>La clase Persona</h3>
+
+<table style="text-align: left; background-color: rgb(255, 255, 204); width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+
+    <tr>
+
+      <td><code><span style="color: rgb(0, 102, 0);">// La clase persona</span><br>
+
+      <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Collections.Generic; <br>
+
+      <span style="color: rgb(153, 0, 0);">using</span> System.Text; <br>
+
+&nbsp;<br>
+
+      <span style="color: rgb(153, 0, 0);">namespace</span> PersonaCharla3 { <br>
+
+&nbsp;&nbsp;&nbsp;<span style="color: rgb(153, 0, 0);"> public class</span> Persona { <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">private</span> string nombre; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">private</span> string apellidos;
+      <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">private</span> string email;
+      <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public</span> string Nombre <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+get { return nombre; } <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+set { nombre = value; } <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public</span> string Apellidos <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+get { return apellidos; } <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+set { apellidos = value; } <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public</span> string Email <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+get { return email; } <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+set { email = value; } <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(0, 102, 0);">/// &lt;summary&gt; </span><br style="color: rgb(0, 102, 0);">
+      <span style="color: rgb(0, 102, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/// Obtener la informaci&oacute;n textual de la clase </span><br style="color: rgb(0, 102, 0);">
+      <span style="color: rgb(0, 102, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/// &lt;/summary&gt; </span><br style="color: rgb(0, 102, 0);">
+      <span style="color: rgb(0, 102, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/// &lt;returns&gt;Una cadena con la
+informaci&oacute;n&lt;/returns&gt; </span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public override</span> string ToString() <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return apellidos + ',' + ' ' + nombre + ':' + ' ' + email; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(153, 0, 0);">public</span> Persona(string apellidos, string nombre, string email) <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{ <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Apellidos = apellidos; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nombre = nombre; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Email = email; <br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+} <br>
+
+&nbsp;&nbsp;&nbsp; } <br>
+
+} </code>
+      </td>
+
+    </tr>
+
+  </tbody>
+</table>
+
 
 <p>Charla para el club .NET sobre desarrollo con Visual Studio 2005</p>
         </section>
