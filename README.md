@@ -1,5 +1,5 @@
-Charla .NET on Visual Studio 2005
-=================================
+Charla .NET con Visual Studio 2005
+==================================
 
 Charla para el club .NET sobre desarrollo con Visual Studio 2005
 <p>
